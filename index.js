@@ -2,9 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
-
-// DB Settings
-//require('./database/querys');//.dbConnection();
+const { formatString } = require("./helpers/format_string");
 
 // Express App
 const app = express();
@@ -16,20 +14,12 @@ app.use(express.json());
 // path public
 const public = path.resolve(__dirname,'public');
 app.use(express.static(public));
-
+const URL_API = formatString('/api/{0}',process.env.VERSAO_API);
 // Routes
-app.use('/api/login', require('./routes/authRoute'));
-app.use('/api/users', require('./routes/usersRoute'));
-app.use('/api/messages', require('./routes/messagesRoute'));
-app.use('/api/groups', require('./routes/groupRoute'));
-app.use('/api/contacts', require('./routes/conctactsRoute'));
+app.use(formatString('{0}/login',URL_API), require('./routes/authRoute'));
+app.use(formatString('{0}/users',URL_API), require('./routes/usersRoute'));
+app.use(formatString('{0}/tarefas',URL_API), require('./routes/tarefasRoute'));
 
-/*
-// For testing with heroku server
-app.route("/check").get((req,res) =>{
- return res.json("Your App is Working");
-})
-*/
 
 //Node server (socket)
 const server = require('http').createServer(app);
@@ -40,12 +30,3 @@ server.listen(3000,(err)=>{  //process.env.PORT
     console.log('Server running on Port: ',process.env.PORT);
 });
 
-// Connect socket (with cors, for web app)
-/*module.exports.io = require('socket.io')(server, {
-    cors: {
-      origin: '*',
-    }
-  }
-);
-
-require('./sockets/socket');*/

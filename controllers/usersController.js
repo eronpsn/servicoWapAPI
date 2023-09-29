@@ -1,5 +1,5 @@
 const { response } = require("express");
-var md5 = require('md5');
+const bcrypt = require('bcryptjs');
 
 const { db } = require('../database/config');
 
@@ -21,9 +21,10 @@ const getUsers = async (req,res=response) =>{
 
 const createUser = (request, res=response) => {
     const { nome, email, senha, perfil } = request.body
-
+    const salt = bcrypt.genSaltSync();
+    var passWord = bcrypt.hashSync(senha, salt);
   
-    db.any('INSERT INTO swap.usuarios (nome, email, senha, perfil ) VALUES ($1, $2, $3, $4)', [nome, email, md5(senha), perfil])
+    db.any('INSERT INTO swap.usuarios (nome, email, senha, perfil ) VALUES ($1, $2, $3, $4)', [nome, email, passWord, perfil])
     .then(data => {
       console.log(data);
       res.json({
