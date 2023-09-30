@@ -38,7 +38,26 @@ const createUser = (request, res=response) => {
     
   }
 
+  const deleteUser = (request, res=response) => {
+    const { id_user } = request.body
+    
+  
+    db.any('DELETE FROM swap.usuarios where id = $1', [id_user])
+    .then(data => {
+      console.log(data);
+      res.json({
+        ok : true,
+        data
+    });
+    })
+    .catch(error => {
+      console.error('Erro:', error);
+    })
+    
+  }
+
 module.exports = {
     getUsers,
-    createUser
+    createUser,
+    deleteUser
 }
