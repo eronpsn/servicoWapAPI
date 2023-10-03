@@ -5,9 +5,9 @@ const { db } = require('../database/config');
 
 const getTarefas = async (req,res=response) =>{ 
  
-    db.any('SELECT * FROM swap.tarefas')
+    db.any("select t.id, t.descricao, t.status, t.data_criacao, u.nome from swap.tarefas t join swap.usuarios u on t.solicitante_id = u.id  where t.status = 'P' ")
     .then(data => {
-      console.log(data);
+      //console.log(data);
       res.json({
         ok : true,
         data
