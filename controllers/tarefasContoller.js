@@ -5,12 +5,12 @@ const { db } = require('../database/config');
 
 const getTarefas = async (req,res=response) =>{ 
  
-    db.any("select t.id, t.descricao, t.status, t.data_criacao, u.nome from swap.tarefas t join swap.usuarios u on t.solicitante_id = u.id  where t.status = 'P' ")
-    .then(data => {
+    db.any("select t.id, t.descricao, t.status, t.data_criacao, t.solicitante_id, u.nome from swap.tarefas t join swap.usuarios u on t.solicitante_id = u.id  where t.status = 'P' ")
+    .then(dados => {
       //console.log(data);
       res.json({
         ok : true,
-        data
+        dados
     });
     })
     .catch(error => {

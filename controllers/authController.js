@@ -12,14 +12,13 @@ const { formatString } = require("../helpers/format_string");
 
 const loginUser = async (req, res = response) => {
 
-    const { email, senha, perfil } = req.body
+    const { email, senha } = req.body
     //const email = req.body.email // is same
 
     try {
         //valid user
-        db.any('SELECT * FROM swap.usuarios WHERE email = $1 and perfil = $2', [email, perfil])
+        db.any('SELECT * FROM swap.usuarios s WHERE email = $1', [email])
             .then(async data => {
-                console.log(data);
                 if (data.length === 0) {
                     res.json({
                         ok: false,
@@ -41,7 +40,11 @@ const loginUser = async (req, res = response) => {
 
                     res.json({
                         ok: true,
-                        user: data,
+                        user: {
+                            "id": data[0]['id'],
+                            "nome": data[0]['nome'],
+                            "perfil": data[0]['perfil']
+                        },
                         token
                         //message:req.body
                     });
@@ -80,7 +83,6 @@ const renewToken = async (req, res = response) => {
                     const token = await generateToken(uid);
                     res.json({
                         ok: true,
-                        data,
                         token
                     });
                 }
