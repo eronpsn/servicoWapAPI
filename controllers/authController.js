@@ -20,9 +20,9 @@ const loginUser = async (req, res = response) => {
         db.any('SELECT * FROM swap.usuarios s WHERE email = $1', [email])
             .then(async data => {
                 if (data.length === 0) {
-                    res.json({
-                        ok: false,
-                        msj: 'user NOT found'
+                    res.status(400).json({
+                        success: false,
+                        message: 'user NOT found'
                     });
                 } else {
 
@@ -30,23 +30,23 @@ const loginUser = async (req, res = response) => {
                     const validPw = bcrypt.compareSync(senha, data[0]['senha']);
                     if (!validPw) {
                         return res.status(400).json({
-                            ok: false,
-                            msj: 'Invalid password'
+                            success: false,
+                            message: 'Invalid password'
                         });
                     }
 
                     // generate JWT (json web token)
                     const token = await generateToken(data[0]['id']);
 
-                    res.json({
-                        ok: true,
+                    res.status(200).json({
+                        success: true,
+                        message: 'Logado com sucesso.',
                         user: {
                             "id": data[0]['id'],
                             "nome": data[0]['nome'],
                             "perfil": data[0]['perfil']
                         },
-                        token
-                        //message:req.body
+                        token                      
                     });
                 }
             })
@@ -57,8 +57,8 @@ const loginUser = async (req, res = response) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            ok: false,
-            msg: 'Unknown Error, contact administrator'
+            success: false,
+            message: 'Unknown Error, contact administrator'
         });
     }
 

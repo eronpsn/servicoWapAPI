@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs');
 
 const { db } = require('../database/config');
 
+const { loginUser } = require('./authController'); 
+
 
 const getUsers = async (req,res=response) =>{
 
@@ -19,22 +21,44 @@ const getUsers = async (req,res=response) =>{
     });   
 };
 
-const createUser = (request, res=response) => {
-    const { nome, email, senha, perfil } = request.body
+const createUser = async  (request, res=response) => {
+    const { nome, email, senha } = request.body
     const salt = bcrypt.genSaltSync();
     var passWord = bcrypt.hashSync(senha, salt);
-  
-    db.any('INSERT INTO swap.usuarios (nome, email, senha, perfil ) VALUES ($1, $2, $3, $4)', [nome, email, passWord, perfil])
-    .then(data => {
+  try {
+    await db.any('INSERT INTO swap.usuarios (nome, email, senha, perfil ) VALUES ($1, $2, $3, $4)', [nome, email, passWord, 'U']);
+    //const userId = insertResult[0].id;
+     await loginUser({ body: { email, senha } }, res);
+   /* console.log(loginResponse);
+    if(loginResponse.success){
+      const token = loginResponse.token;
+      res.status(200).json({
+        success: true,
+        message: 'Logado com sucesso.',
+        user: loginResponse.user,
+        token                      
+    });
+    }else{
+      return res.status(400).json({
+        success: false,
+        message: 'Algo errado.'
+    });
+    }*/
+
+  /*  .then(data => {
       console.log(data);
       res.json({
-        ok : true,
-        data
+        success : true,
+        message: 'Criado com sucesso.'
     });
-    })
-    .catch(error => {
+    })*/
+  }catch(error) {
       console.error('Erro:', error);
-    })
+      res.status(500).json({
+        success: false,
+        message: 'Erro ao criar o usuário'
+      });
+    }
     
   }
 
